@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "ensure_vpn"
+version = "0.1.0"
+description = "A function to ensure you are connected to your favorite VPN before running your script."
+authors = ["Francesco Truzzi <francesco@truzzi.me>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+requests = "^2.25.1"
+returns = "0.15.0"
+
+[tool.poetry.dev-dependencies]
+mypy = "^0.812"
+black = "^20.8b1"
+pytest = "^6.2.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
