@@ -1,0 +1,41 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - ensure_vpn-v0.1.0 github.com/ftruzzi/ensure_vpn/
+    method: GET
+    uri: https://ipv4.am.i.mullvad.net/json
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAEA22PTU+EMBCG/8pmzqQI7ka2N2Ni9GayR2PIAHWpW9qGTkUk/HeHlRg32eP70feZ
+        TqA9SMhFfluIbJeJbL+FBGoXLfUjJ8+EZlwcTYt8cJ1jZZw9aoqNArkXN8VdzhbS6mx3omAvgS4a
+        84lNqb40lQvnHU1QCVQG65PRgVQDcrqUa6VXIRoKIF8nsNgxB15696Fq2jw5q0bvaDlD2xMnLZEP
+        Mk2HYRD+t9WuJeH6Y4qVi1TGIHzr+dUF/sybkz/KwWPXYgzX18Oanmd5Gq3+5n87m17ffZsT+F/j
+        Yx8x0KCqzcHfw/wDfjz3fn8BAAA=
+    headers:
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sat, 20 Mar 2021 23:57:46 GMT
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=15768000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: OK
+version: 1
