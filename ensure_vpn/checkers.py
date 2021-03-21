@@ -8,7 +8,7 @@ from requests.sessions import session
 from returns.result import Result, safe
 from returns.pipeline import flow, is_successful
 
-ENSURE_VPN_VERSION = "0.1.0"
+ENSURE_VPN_VERSION = "0.1.1"
 USER_AGENT = f"ensure_vpn-v{ENSURE_VPN_VERSION} github.com/ftruzzi/ensure_vpn/"
 
 
