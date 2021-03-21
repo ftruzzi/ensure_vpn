@@ -6,6 +6,11 @@ A Python function to ensure you are connected to your favorite VPN before runnin
 
 Add your own!
 
+## Installation
+```
+pip install ensure-vpn
+```
+
 ## Usage
 
 Import the function and run it as the first thing in your script:
