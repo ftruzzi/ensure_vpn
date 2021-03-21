@@ -41,6 +41,6 @@ jobs:
     - name: Run tests
       run: |
         poetry run black .
-        poetry run mypy ensure_vpn ./tests/**/*.py
+        poetry run mypy ensure_vpn ./tests/*.py
     - name: Build
       run: poetry build

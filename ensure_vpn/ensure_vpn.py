@@ -8,7 +8,7 @@ providers = [MullvadVPN, NordVPN]
 
 def ensure_vpn(provider: str) -> None:
     selected_providers = [
-        p for p in providers if p.name.lower() == provider.strip().lower()
+        p for p in providers if p.name.lower() == provider.strip().lower()  # type: ignore
     ]
     if len(selected_providers) != 1:
         raise EnsureVPNException(
