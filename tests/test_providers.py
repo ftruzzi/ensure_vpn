@@ -5,6 +5,7 @@ from ensure_vpn.exceptions import VPNNotConnectedException
 
 providers = ("mullvad", "nordvpn")
 
+
 @pytest.mark.vcr(record_mode="none")
 @pytest.mark.parametrize("provider", providers)
 def test_disconnected(provider: str):
@@ -14,11 +15,13 @@ def test_disconnected(provider: str):
     except VPNNotConnectedException:
         pass
 
+
 # TODO play with VCR to add fake NordVPN response
 @pytest.mark.vcr(record_mode="none")
 @pytest.mark.parametrize("provider", ["mullvad"])
 def test_connected(provider: str):
     ensure_vpn(provider)
+
 
 @pytest.mark.vcr(record_mode="none")
 def test_decorator():

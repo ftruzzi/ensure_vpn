@@ -4,6 +4,7 @@ from returns.result import Result, safe
 
 from .checkers import APIChecker
 
+
 class VPNProvider(abc.ABC):
     @property
     @abc.abstractmethod
