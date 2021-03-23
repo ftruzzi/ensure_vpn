@@ -1,0 +1,32 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - curl/7.75
+    method: GET
+    uri: https://ifconfig.me/
+  response:
+    body:
+      string: 217.138.222.100
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Content-Length:
+      - '15'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Tue, 23 Mar 2021 23:05:11 GMT
+      Via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+version: 1
