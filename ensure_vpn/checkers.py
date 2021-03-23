@@ -2,7 +2,7 @@ import abc
 from ipaddress import IPv4Network
 
 from json import JSONDecodeError
-from typing import Any, Callable, Dict, Union
+from typing import Any, Callable, Union
 
 import requests
 
@@ -62,7 +62,7 @@ class APIChecker(VPNChecker):
         """Runs checker, fetching and validating data
 
         Returns:
-            dict: return value of validation function
+            EnsureVPNResult: return value of validation function
         """
         response = APIChecker._get_response(
             self.session.request(method="GET", url=self.url, **self.request_args)

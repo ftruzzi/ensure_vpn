@@ -33,7 +33,7 @@ class MullvadVPN(VPNProvider):
         checker = APIChecker(
             url="https://ipv4.am.i.mullvad.net/json",
             validation_func=lambda json: EnsureVPNResult(
-                json["mullvad_exit_ip"] == True, json["ip"]  # type: ignore
+                json["mullvad_exit_ip"] is True, json["ip"]  # type: ignore
             ),
         )
         return checker.run()
@@ -49,7 +49,7 @@ class NordVPN(VPNProvider):
             url="https://nordvpn.com/wp-admin/admin-ajax.php",
             params={"action": "get_user_info_data"},
             validation_func=lambda json: EnsureVPNResult(
-                json["status"] == True, json["ip"]  # type: ignore
+                json["status"] is True, json["ip"]  # type: ignore
             ),
         )
         return checker.run()

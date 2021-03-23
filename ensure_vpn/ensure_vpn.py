@@ -11,7 +11,6 @@ providers = [CustomVPN, MullvadVPN, NordVPN]
 def ensure_vpn(ip_or_provider: str) -> None:
     try:
         selected_provider = CustomVPN(ip_or_provider)
-
     except AddressValueError:
         selected_providers = [
             p for p in providers if p.name.lower() == ip_or_provider.strip().lower()  # type: ignore
@@ -26,7 +25,7 @@ def ensure_vpn(ip_or_provider: str) -> None:
     wrapped_result = selected_provider.validate()
     if is_successful(wrapped_result):
         result = wrapped_result.unwrap()
-        if result.is_connected == False:
+        if result.is_connected is False:
             raise VPNNotConnectedException(
                 f"You are not connected to {selected_provider.name}. Found IP: {str(result.actual_ip.network_address)}",
                 actual_ip=result.actual_ip,
