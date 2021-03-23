@@ -1,6 +1,4 @@
-from abc import ABCMeta
-from ipaddress import AddressValueError, IPv4Network
-from typing import Union
+from ipaddress import AddressValueError
 
 from returns.pipeline import is_successful
 
