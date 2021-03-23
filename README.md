@@ -1,8 +1,9 @@
 A Python function to ensure you are connected to your favorite VPN before running your script or function. It just raises an exception if you're not connected.
 
 ## Supported VPN providers
-- Mullvad
-- NordVPN
+- Mullvad (`"mullvad"`)
+- NordVPN (`"nordvpn"`)
+- Custom IP
 
 Add your own!
 
@@ -21,6 +22,11 @@ from ensure_vpn import ensure_vpn
 ensure_vpn("mullvad") # raises VPNNotConnectedException if you're not connected.
 
 # rest of your script goes here
+```
+
+You can also use a custom IP or subnet:
+```python
+ensure_vpn("2.235.200.110") # or e.g. "2.235.200.0/24"
 ```
 
 You can also use the decorator to run the check every time before running a specific function. This is to make sure you don't run untrusted code if you lose your VPN connection after starting your program.

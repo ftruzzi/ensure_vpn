@@ -6,7 +6,7 @@ from typing import Any, Callable, Dict, Union
 
 import requests
 
-ENSURE_VPN_VERSION = "0.1.1"
+ENSURE_VPN_VERSION = "0.2.0"
 USER_AGENT = f"ensure_vpn-v{ENSURE_VPN_VERSION} github.com/ftruzzi/ensure_vpn/"
 
 
