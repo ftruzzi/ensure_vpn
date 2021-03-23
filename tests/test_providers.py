@@ -6,7 +6,7 @@ from ensure_vpn.exceptions import VPNNotConnectedException
 providers = ("mullvad", "nordvpn")
 custom_ips = ("217.138.222.100", "217.138.222.0/24")
 
-@pytest.mark.vcr(record_mode="once")
+@pytest.mark.vcr(record_mode="none")
 @pytest.mark.parametrize("ip_or_provider", providers + custom_ips)
 def test_disconnected(ip_or_provider: str):
     try:
@@ -17,7 +17,7 @@ def test_disconnected(ip_or_provider: str):
 
 
 # TODO play with VCR to add fake NordVPN response
-@pytest.mark.vcr(record_mode="once")
+@pytest.mark.vcr(record_mode="none")
 @pytest.mark.parametrize("ip_or_provider", ("mullvad",) + custom_ips)
 def test_connected(ip_or_provider: str):
     ensure_vpn(ip_or_provider)
