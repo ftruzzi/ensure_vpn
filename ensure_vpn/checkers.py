@@ -1,6 +1,8 @@
 import abc
+from ipaddress import IPv4Network
 
-from typing import Any, Callable, Dict
+from json import JSONDecodeError
+from typing import Any, Callable, Dict, Union
 
 import requests
 
@@ -8,9 +10,17 @@ ENSURE_VPN_VERSION = "0.1.1"
 USER_AGENT = f"ensure_vpn-v{ENSURE_VPN_VERSION} github.com/ftruzzi/ensure_vpn/"
 
 
+class EnsureVPNResult:
+    def __init__(self, is_connected: bool, actual_ip: Union[str, IPv4Network]):
+        self.is_connected = is_connected
+        if isinstance(actual_ip, str):
+            actual_ip = IPv4Network(actual_ip)
+        self.actual_ip = actual_ip
+
+
 class VPNChecker(abc.ABC):
     @abc.abstractmethod
-    def run(self) -> bool:
+    def run(self) -> EnsureVPNResult:
         raise NotImplementedError("Every checker must have a `run` method.")
 
 
@@ -23,7 +33,7 @@ class APIChecker(VPNChecker):
         self,
         *,
         url: str,
-        validation_func: Callable[[Dict[Any, Any]], bool],
+        validation_func: Callable[[Any], EnsureVPNResult],
         **request_args,
     ):
         """requests-based checker that performs HTTP requests.
@@ -31,7 +41,7 @@ class APIChecker(VPNChecker):
         Args:
             url (str): URL to perform a GET request to
             request_args (dict): args passed to requests.request call
-            validation_func (Callable[[Dict[Any, Any]], bool]): function that validates the fetched JSON response
+            validation_func (Callable[[str, dict], EnsureVPNResult]): function that validates the fetched text/JSON response
         """
         self.url = url
         self.request_args = request_args
@@ -41,17 +51,20 @@ class APIChecker(VPNChecker):
         self.session.headers.update({"User-Agent": USER_AGENT})
 
     @staticmethod
-    def _get_json_response(response: requests.Response) -> dict:
+    def _get_response(response: requests.Response) -> Union[dict, str]:
         response.raise_for_status()
-        return response.json()
+        try:
+            return response.json()
+        except JSONDecodeError:
+            return response.text
 
-    def run(self) -> bool:
+    def run(self) -> EnsureVPNResult:
         """Runs checker, fetching and validating data
 
         Returns:
-            bool: return value of validation function
+            dict: return value of validation function
         """
-        response = APIChecker._get_json_response(
+        response = APIChecker._get_response(
             self.session.request(method="GET", url=self.url, **self.request_args)
         )
         return self.validation_func(response)
