@@ -17,7 +17,7 @@ from .constants import (
     PROTONVPN_SERVER_URL,
     PROTONVPN_SERVER_FILE_PATH,
     SURFSHARK_CHECKER_URL,
-    USER_AGENT,
+    USER_AGENT, VYPRVPN_CHECKER_URL,
 )
 from .helpers import get_dict_values, is_today
 
@@ -143,6 +143,18 @@ class SurfsharkVPN(VPNProvider):
         checker = APIChecker(
             url=SURFSHARK_CHECKER_URL,
             validation_func=lambda json: json["secured"] is True,
+            ip_func=lambda json: IPv4Address(json["ip"]),
+        )
+        return checker.run()
+
+class VyprVPN(VPNProvider):
+    name = "VyprVPN"
+
+    @staticmethod
+    def validate() -> EnsureVPNResult:
+        checker = APIChecker(
+            url=VYPRVPN_CHECKER_URL,
+            validation_func=lambda json: json["connected"] is True,
             ip_func=lambda json: IPv4Address(json["ip"]),
         )
         return checker.run()

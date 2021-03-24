@@ -6,7 +6,7 @@ from ensure_vpn import ensure_vpn, ensure_vpn_decorator
 from ensure_vpn.exceptions import VPNNotConnectedException
 from ensure_vpn.constants import PROTONVPN_SERVER_FILE_PATH
 
-providers = ("mullvad", "nordvpn", "protonvpn", "hidemyass", "surfshark")
+providers = ("mullvad", "nordvpn", "protonvpn", "hidemyass", "surfshark", "vyprvpn")
 custom_ips = ("217.138.222.100", "217.138.222.0/24")
 
 if os.path.isfile(PROTONVPN_SERVER_FILE_PATH):
