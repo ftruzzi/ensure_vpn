@@ -42,9 +42,8 @@ class MullvadVPN(VPNProvider):
     def validate() -> EnsureVPNResult:
         checker = APIChecker(
             url=MULLVAD_CHECKER_URL,
-            validation_func=lambda json: EnsureVPNResult(
-                json["mullvad_exit_ip"] is True, json["ip"]  # type: ignore
-            ),
+            validation_func=lambda json: json["mullvad_exit_ip"] is True,
+            ip_func=lambda json: json["ip"],
         )
         return checker.run()
 
@@ -58,9 +57,8 @@ class NordVPN(VPNProvider):
         checker = APIChecker(
             url=NORDVPN_CHECKER_URL,
             params={"action": "get_user_info_data"},
-            validation_func=lambda json: EnsureVPNResult(
-                json["status"] is True, json["ip"]  # type: ignore
-            ),
+            validation_func=lambda json: json["status"] is True,
+            ip_func=lambda json: json["ip"],
         )
         return checker.run()
 
@@ -74,14 +72,7 @@ class CustomVPN(VPNProvider):
 
     @safe
     def validate(self) -> EnsureVPNResult:
-        checker = IPChecker(
-            validation_func=lambda actual_ip: EnsureVPNResult(
-                is_connected=IPv4Network(self.wanted_ip).overlaps(
-                    IPv4Network(actual_ip.strip())
-                ),
-                actual_ip=actual_ip.strip(),
-            ),
-        )
+        checker = IPChecker(validation_func=lambda ip: self.wanted_ip.overlaps(ip))
 
         return checker.run()
 
@@ -101,11 +92,8 @@ class ProtonVPN(VPNProvider):
     def validate() -> EnsureVPNResult:
         servers = ProtonVPN._fetch_servers()
         checker = IPChecker(
-            validation_func=lambda actual_ip: EnsureVPNResult(
-                is_connected=actual_ip.strip()
-                in list(get_dict_values("ExitIP", servers)),
-                actual_ip=actual_ip.strip(),
-            )
+            validation_func=lambda ip: str(ip.network_address)
+            in list(get_dict_values("ExitIP", servers))
         )
 
         return checker.run()
