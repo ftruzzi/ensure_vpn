@@ -1,10 +1,28 @@
 import abc
 from ipaddress import IPv4Network
+from typing import List
+import requests
 
 from requests.exceptions import RequestException
 from returns.result import Result, safe
 
-from .checkers import APIChecker, EnsureVPNResult
+from .checkers import APIChecker, EnsureVPNResult, IPChecker, USER_AGENT
+
+
+def get_dict_values(key, d):
+    if not d:
+        return None
+    if hasattr(d, "items"):
+        for k, v in d.items():
+            if k == key:
+                yield v
+            if isinstance(v, dict):
+                for result in get_dict_values(key, v):
+                    yield result
+            elif isinstance(v, list):
+                for d in v:
+                    for result in get_dict_values(key, d):
+                        yield result
 
 
 class VPNProvider(abc.ABC):
@@ -71,21 +89,38 @@ class CustomVPN(VPNProvider):
 
     @safe
     def validate(self) -> EnsureVPNResult:
-        result = None
-        while result is None:
-            try:
-                checker = APIChecker(
-                    url=f"https://{self.ip_checkers[0]}",
-                    headers={"User-Agent": "curl/7.75"},
-                    validation_func=lambda actual_ip: EnsureVPNResult(
-                        is_connected=IPv4Network(self.wanted_ip).overlaps(
-                            IPv4Network(actual_ip.strip())
-                        ),
-                        actual_ip=actual_ip.strip(),
-                    ),
-                )
-                result = checker.run()
-            except RequestException:
-                self.ip_checkers = self.ip_checkers[1:]
+        checker = IPChecker(
+            validation_func=lambda actual_ip: EnsureVPNResult(
+                is_connected=IPv4Network(self.wanted_ip).overlaps(
+                    IPv4Network(actual_ip.strip())
+                ),
+                actual_ip=actual_ip.strip(),
+            ),
+        )
 
-        return result
+        return checker.run()
+
+
+class ProtonVPN(VPNProvider):
+    name = "ProtonVPN"
+
+    # TODO cache results, re-fetch if failed
+    @staticmethod
+    def _fetch_servers() -> List[str]:
+        return requests.get(
+            "https://api.protonmail.ch/vpn/logicals", headers={"User-Agent": USER_AGENT}
+        ).json()
+
+    @staticmethod
+    @safe
+    def validate() -> EnsureVPNResult:
+        servers = ProtonVPN._fetch_servers()
+        checker = IPChecker(
+            validation_func=lambda actual_ip: EnsureVPNResult(
+                is_connected=actual_ip.strip()
+                in list(get_dict_values("ExitIP", servers)),
+                actual_ip=actual_ip.strip(),
+            )
+        )
+
+        return checker.run()

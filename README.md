@@ -3,6 +3,7 @@ A Python function to ensure you are connected to your favorite VPN before runnin
 ## Supported VPN providers
 - Mullvad (`"mullvad"`)
 - NordVPN (`"nordvpn"`)
+- ProtonVPN (`"protonvpn"`)
 - Custom IP
 
 Add your own!
