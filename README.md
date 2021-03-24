@@ -3,9 +3,12 @@ A Python function to ensure you are connected to your favorite VPN before runnin
 ## Supported VPN providers
 - Custom IP
 - HideMyAss(`"hidemyass"`)
+- IVPN(`"ivpn"`)
 - Mullvad (`"mullvad"`)
 - NordVPN (`"nordvpn"`)
+- Private Internet Access("`privateinternetaccess`")
 - ProtonVPN (`"protonvpn"`)
+- Surfshark (`"surfshark"`)
 
 Add your own!
 
