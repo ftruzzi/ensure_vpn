@@ -86,7 +86,7 @@ class IPChecker(VPNChecker):
         self.validation_func = validation_func
 
     @staticmethod
-    def _get_current_ip():
+    def _get_current_ip() -> IPv4Network:
         ip_checkers = IP_CHECKERS
 
         actual_ip = None
