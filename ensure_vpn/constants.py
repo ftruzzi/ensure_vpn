@@ -1,6 +1,6 @@
 import os
 
-ENSURE_VPN_VERSION = "0.2.0"
+ENSURE_VPN_VERSION = "0.3.0"
 USER_AGENT = f"ensure_vpn-v{ENSURE_VPN_VERSION} github.com/ftruzzi/ensure_vpn/"
 
 MULLVAD_CHECKER_URL = "https://ipv4.am.i.mullvad.net/json"
