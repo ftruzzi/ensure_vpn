@@ -1,6 +1,6 @@
 import abc
 
-from ipaddress import IPv4Network
+from ipaddress import IPv4Address, IPv4Network
 from json import JSONDecodeError
 from typing import Any, Callable, Union
 
@@ -11,10 +11,10 @@ from .constants import IP_CHECKERS, USER_AGENT
 
 
 class EnsureVPNResult:
-    def __init__(self, is_connected: bool, actual_ip: Union[str, IPv4Network]):
+    def __init__(self, is_connected: bool, actual_ip: Union[str, IPv4Address]):
         self.is_connected = is_connected
         if isinstance(actual_ip, str):
-            actual_ip = IPv4Network(actual_ip)
+            actual_ip = IPv4Address(actual_ip)
         self.actual_ip = actual_ip
 
 
@@ -34,7 +34,7 @@ class APIChecker(VPNChecker):
         *,
         url: str,
         validation_func: Callable[[Any], bool],
-        ip_func: Callable[[Any], str],
+        ip_func: Callable[[Any], IPv4Address],
         **request_args,
     ):
         """requests-based checker that performs HTTP requests.
@@ -81,18 +81,20 @@ class IPChecker(VPNChecker):
     def __init__(
         self,
         *,
-        validation_func: Callable[[IPv4Network], bool],
+        validation_func: Callable[[IPv4Address], bool],
     ):
-        self.ip_checkers = IP_CHECKERS
         self.validation_func = validation_func
 
-    def run(self) -> EnsureVPNResult:
+    @staticmethod
+    def _get_current_ip() -> IPv4Address:
+        ip_checkers = IP_CHECKERS
+
         actual_ip = None
         while actual_ip is None:
             try:
                 actual_ip = (
                     APIChecker(
-                        url=f"https://{self.ip_checkers[0]}",
+                        url=f"https://{ip_checkers[0]}",
                         headers={"User-Agent": "curl/7.75"},
                         validation_func=lambda x: x,
                         ip_func=lambda x: x.strip(),
@@ -100,9 +102,13 @@ class IPChecker(VPNChecker):
                     .run()
                     .actual_ip
                 )
-            except RequestException:
-                self.ip_checkers = self.ip_checkers[1:]
+                return actual_ip
 
+            except RequestException:
+                ip_checkers = ip_checkers[1:]
+
+    def run(self) -> EnsureVPNResult:
+        actual_ip = IPChecker._get_current_ip()
         return EnsureVPNResult(
             is_connected=self.validation_func(actual_ip), actual_ip=actual_ip
         )
