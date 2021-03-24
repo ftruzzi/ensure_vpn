@@ -13,7 +13,7 @@ import requests
 
 from .checkers import APIChecker, EnsureVPNResult, IPChecker, WebChecker
 from .constants import (
-    HIDEMYASS_CHECKER_URL,
+    HIDEMYASS_CHECKER_URL, HOTSPOTSHIELD_CHECKER_URL,
     IVPN_CHECKER_URL,
     MULLVAD_CHECKER_URL,
     NORDVPN_CHECKER_URL,
@@ -227,4 +227,17 @@ class PrivateInternetAccessVPN(VPNProvider):
             ip_func=PrivateInternetAccessVPN.ip_func,
         )
 
+        return checker.run()
+
+
+class HotspotShieldVPN(VPNProvider):
+    name = "Hotspot Shield"
+
+    @staticmethod
+    def validate() -> EnsureVPNResult:
+        checker = APIChecker(
+            url=HOTSPOTSHIELD_CHECKER_URL,
+            validation_func=lambda json: json["is_hotspotshield_connected"] is True,
+            ip_func=lambda json: json["ip"],
+        )
         return checker.run()

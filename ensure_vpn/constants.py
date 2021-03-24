@@ -5,6 +5,7 @@ USER_AGENT = f"ensure_vpn-v{ENSURE_VPN_VERSION} github.com/ftruzzi/ensure_vpn/"
 
 IVPN_CHECKER_URL = "https://www.ivpn.net/"
 HIDEMYASS_CHECKER_URL = "https://my.hidemyass.com/vpnbackend/isInVpnTunnel"
+HOTSPOTSHIELD_CHECKER_URL = "https://account.hotspotshield.com/ipinfo"
 MULLVAD_CHECKER_URL = "https://ipv4.am.i.mullvad.net/json"
 NORDVPN_CHECKER_URL = "https://nordvpn.com/wp-admin/admin-ajax.php"
 PIA_CHECKER_URL = "https://www.privateinternetaccess.com/"
