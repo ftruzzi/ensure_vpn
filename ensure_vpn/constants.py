@@ -6,6 +6,8 @@ USER_AGENT = f"ensure_vpn-v{ENSURE_VPN_VERSION} github.com/ftruzzi/ensure_vpn/"
 HIDEMYASS_CHECKER_URL = "https://my.hidemyass.com/vpnbackend/isInVpnTunnel"
 MULLVAD_CHECKER_URL = "https://ipv4.am.i.mullvad.net/json"
 NORDVPN_CHECKER_URL = "https://nordvpn.com/wp-admin/admin-ajax.php"
+SURFSHARK_CHECKER_URL = "https://surfshark.com/api/v1/server/user"
+
 PROTONVPN_SERVER_URL = "https://api.protonmail.ch/vpn/logicals"
 PROTONVPN_SERVER_FILE_PATH = os.path.join(
     os.path.dirname(__file__), "proton_servers.json"

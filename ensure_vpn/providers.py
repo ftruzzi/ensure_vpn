@@ -16,6 +16,7 @@ from .constants import (
     NORDVPN_CHECKER_URL,
     PROTONVPN_SERVER_URL,
     PROTONVPN_SERVER_FILE_PATH,
+    SURFSHARK_CHECKER_URL,
     USER_AGENT,
 )
 from .helpers import get_dict_values, is_today
@@ -123,9 +124,7 @@ class ProtonVPN(VPNProvider):
     @staticmethod
     def validate() -> EnsureVPNResult:
         servers, were_fetched = ProtonVPN._get_servers()
-        checker = IPChecker(
-            validation_func=lambda ip: str(ip) in servers
-        )
+        checker = IPChecker(validation_func=lambda ip: str(ip) in servers)
 
         result = checker.run()
         if result.is_connected or were_fetched:
@@ -133,4 +132,17 @@ class ProtonVPN(VPNProvider):
 
         # if the check failed with cached server file, retry with new server list
         servers, _ = ProtonVPN._get_servers(fetch_servers=True)
+        return checker.run()
+
+
+class SurfsharkVPN(VPNProvider):
+    name = "Surfshark"
+
+    @staticmethod
+    def validate() -> EnsureVPNResult:
+        checker = APIChecker(
+            url=SURFSHARK_CHECKER_URL,
+            validation_func=lambda json: json["secured"] is True,
+            ip_func=lambda json: IPv4Address(json["ip"]),
+        )
         return checker.run()

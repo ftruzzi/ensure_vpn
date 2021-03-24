@@ -6,7 +6,7 @@ from ensure_vpn import ensure_vpn, ensure_vpn_decorator
 from ensure_vpn.exceptions import VPNNotConnectedException
 from ensure_vpn.constants import PROTONVPN_SERVER_FILE_PATH
 
-providers = ("mullvad", "nordvpn", "protonvpn", "hidemyass")
+providers = ("mullvad", "nordvpn", "protonvpn", "hidemyass", "surfshark")
 custom_ips = ("217.138.222.100", "217.138.222.0/24")
 
 if os.path.isfile(PROTONVPN_SERVER_FILE_PATH):
@@ -22,7 +22,7 @@ def test_disconnected(ip_or_provider: str):
         pass
 
 
-# TODO play with VCR to add fake NordVPN, HideMyAss responses
+# TODO manually edit VCR cassettes to add fake NordVPN, HideMyAss, Surfshark responses
 @pytest.mark.vcr(record_mode="none")
 @pytest.mark.parametrize("ip_or_provider", ("mullvad", "protonvpn") + custom_ips)
 def test_connected(ip_or_provider: str):
