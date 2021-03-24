@@ -104,7 +104,6 @@ class ProtonVPN(VPNProvider):
             servers = ProtonVPN._fetch_servers()
             with open(PROTONVPN_SERVER_FILE_PATH, "w") as f:
                 json.dump(servers, f)
-
             return servers, True
 
         return json.load(open(PROTONVPN_SERVER_FILE_PATH, "r")), False
