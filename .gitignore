@@ -3,3 +3,4 @@ __pycache__
 .venv
 *.pyc
 dist/
+proton_servers.json

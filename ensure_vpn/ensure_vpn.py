@@ -3,9 +3,9 @@ from ipaddress import AddressValueError
 from returns.pipeline import is_successful
 
 from .exceptions import EnsureVPNException, VPNNotConnectedException
-from .providers import CustomVPN, MullvadVPN, NordVPN, ProtonVPN
+from .providers import CustomVPN, HideMyAssVPN, MullvadVPN, NordVPN, ProtonVPN
 
-providers = [CustomVPN, MullvadVPN, NordVPN, ProtonVPN]
+providers = [CustomVPN, HideMyAssVPN, MullvadVPN, NordVPN, ProtonVPN]
 
 
 def ensure_vpn(ip_or_provider: str) -> None:

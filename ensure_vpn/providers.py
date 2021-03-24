@@ -13,6 +13,7 @@ from returns.result import Result, safe
 
 from .checkers import APIChecker, EnsureVPNResult, IPChecker
 from .constants import (
+    HIDEMYASS_CHECKER_URL,
     MULLVAD_CHECKER_URL,
     NORDVPN_CHECKER_URL,
     PROTONVPN_SERVER_URL,
@@ -37,6 +38,36 @@ class VPNProvider(abc.ABC):
         @safe-wrapped validation function.
         """
         raise NotImplementedError("Every VPN provider must have a validation function.")
+
+
+class CustomVPN(VPNProvider):
+    name = ""
+    negated = False
+
+    def __init__(self, wanted_ip: str) -> None:
+        self.name = wanted_ip
+        self.wanted_ip = IPv4Network(wanted_ip)
+
+    @safe
+    def validate(self) -> EnsureVPNResult:
+        checker = IPChecker(
+            validation_func=lambda ip: self.wanted_ip.overlaps(ip)
+        )
+        return checker.run()
+
+
+class HideMyAssVPN(VPNProvider):
+    name = "HideMyAss"
+
+    @staticmethod
+    @safe
+    def validate() -> EnsureVPNResult:
+        checker = APIChecker(
+            url=HIDEMYASS_CHECKER_URL,
+            validation_func=lambda json: json["isInVpnTunnel"] is True,
+            ip_func=lambda _: IPChecker._get_current_ip(),
+        )
+        return checker.run()
 
 
 class MullvadVPN(VPNProvider):
@@ -65,19 +96,6 @@ class NordVPN(VPNProvider):
             validation_func=lambda json: json["status"] is True,
             ip_func=lambda json: json["ip"],
         )
-        return checker.run()
-
-
-class CustomVPN(VPNProvider):
-    name = ""
-
-    def __init__(self, wanted_ip: str) -> None:
-        self.name = wanted_ip
-        self.wanted_ip = IPv4Network(wanted_ip)
-
-    @safe
-    def validate(self) -> EnsureVPNResult:
-        checker = IPChecker(validation_func=lambda ip: self.wanted_ip.overlaps(ip))
         return checker.run()
 
 
