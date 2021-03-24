@@ -5,6 +5,8 @@ from json import JSONDecodeError
 from typing import Any, Callable, Union
 
 import requests
+
+from bs4 import BeautifulSoup  # type: ignore
 from requests.exceptions import RequestException
 
 from .constants import IP_CHECKERS, USER_AGENT
@@ -111,4 +113,51 @@ class IPChecker(VPNChecker):
         actual_ip = IPChecker._get_current_ip()
         return EnsureVPNResult(
             is_connected=self.validation_func(actual_ip), actual_ip=actual_ip
+        )
+
+
+class WebChecker(VPNChecker):
+    """
+    BeautifulSoup-based checker for website parsing.
+    """
+
+    def __init__(
+        self,
+        *,
+        url: str,
+        validation_func: Callable[[BeautifulSoup], bool],
+        ip_func: Callable[[BeautifulSoup], IPv4Address],
+        **request_args,
+    ):
+        """BeautifulSoup-based checker for website parsing.
+
+        Args:
+            url (str): URL to perform a GET request to
+            request_args (dict): args passed to requests.request call
+            validation_func (Callable[[BeautifulSoup], bool]): checks soup to validate connection
+            ip_func (Callable[[BeautifulSoup], str]): retrieves actual IP from soup
+        """
+        self.url = url
+        self.request_args = request_args
+        self.validation_func = validation_func
+        self.ip_func = ip_func
+
+        self.session = requests.Session()
+        self.session.headers.update({"User-Agent": USER_AGENT})
+
+    def run(self) -> EnsureVPNResult:
+        """Runs checker, fetching and validating data
+
+        Returns:
+            EnsureVPNResult: contains check result and actual IP
+        """
+        soup = BeautifulSoup(
+            APIChecker._get_response(
+                self.session.request(method="GET", url=self.url, **self.request_args)
+            ), features="html.parser"
+        )
+
+        return EnsureVPNResult(
+            is_connected=self.validation_func(soup),
+            actual_ip=self.ip_func(soup),
         )

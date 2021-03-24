@@ -2,24 +2,29 @@ import abc
 import os
 import json
 import time
+import re
 
 from ipaddress import IPv4Address, IPv4Network
 from os.path import isfile
 from typing import List, Tuple
+from bs4 import BeautifulSoup  # type: ignore
 
 import requests
 
-from .checkers import APIChecker, EnsureVPNResult, IPChecker
+from .checkers import APIChecker, EnsureVPNResult, IPChecker, WebChecker
 from .constants import (
     HIDEMYASS_CHECKER_URL,
+    IVPN_CHECKER_URL,
     MULLVAD_CHECKER_URL,
     NORDVPN_CHECKER_URL,
+    PIA_CHECKER_URL,
     PROTONVPN_SERVER_URL,
     PROTONVPN_SERVER_FILE_PATH,
     SURFSHARK_CHECKER_URL,
-    USER_AGENT, VYPRVPN_CHECKER_URL,
+    USER_AGENT,
+    VYPRVPN_CHECKER_URL,
 )
-from .helpers import get_dict_values, is_today
+from .helpers import get_dict_values, is_today, parse_ip_from_string
 
 
 class VPNProvider(abc.ABC):
@@ -147,6 +152,7 @@ class SurfsharkVPN(VPNProvider):
         )
         return checker.run()
 
+
 class VyprVPN(VPNProvider):
     name = "VyprVPN"
 
@@ -157,4 +163,68 @@ class VyprVPN(VPNProvider):
             validation_func=lambda json: json["connected"] is True,
             ip_func=lambda json: IPv4Address(json["ip"]),
         )
+        return checker.run()
+
+
+class IVPN(VPNProvider):
+    name = "IVPN"
+
+    @staticmethod
+    def validation_func(soup: BeautifulSoup) -> bool:
+        # TODO validate with actual IVPN connection
+        text = (
+            soup.select_one("div.connection-status__content span").text.strip().lower()
+        )
+        if "not connected" in text:
+            return False
+
+        if "connected" in text:
+            return True
+
+        return False
+
+    @staticmethod
+    def ip_func(soup: BeautifulSoup) -> IPv4Address:
+        ip_el = next(
+            filter(
+                lambda el: "ip address" in el.text.lower(),
+                soup.select("div.connection-status__content div"),
+            )
+        )
+        ip_addr = parse_ip_from_string(ip_el.text)
+        return IPv4Address(ip_addr)
+
+    @staticmethod
+    def validate() -> EnsureVPNResult:
+        checker = WebChecker(
+            url=IVPN_CHECKER_URL,
+            validation_func=IVPN.validation_func,
+            ip_func=IVPN.ip_func,
+        )
+        return checker.run()
+
+
+class PrivateInternetAccessVPN(VPNProvider):
+    name = "privateinternetaccess"
+
+    @staticmethod
+    def validation_func(soup: BeautifulSoup) -> bool:
+        # TODO validate with actual IVPN connection
+        text = soup.select_one(".topbar__list").text.strip().lower()
+        return "not protected" not in text
+
+    @staticmethod
+    def ip_func(soup: BeautifulSoup) -> IPv4Address:
+        ip_el = soup.select_one(".topbar__item-ip")
+        ip_addr = parse_ip_from_string(ip_el.text)
+        return IPv4Address(ip_addr)
+
+    @staticmethod
+    def validate() -> EnsureVPNResult:
+        checker = WebChecker(
+            url=PIA_CHECKER_URL,
+            validation_func=PrivateInternetAccessVPN.validation_func,
+            ip_func=PrivateInternetAccessVPN.ip_func,
+        )
+
         return checker.run()

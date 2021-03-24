@@ -1,3 +1,5 @@
+import re
+
 from datetime import datetime
 from typing import Generator
 
@@ -24,3 +26,10 @@ def get_dict_values(key, d) -> Generator:
 def is_today(date: str, format: str = "%a %b %d %H:%M:%S %Y"):
     parsed_date = datetime.strptime(date, format)
     return parsed_date.date() == datetime.today().date()
+
+def parse_ip_from_string(s: str) -> str:
+    from .constants import IP_REGEXP
+    if result := re.search(IP_REGEXP, s):
+        return result.group()
+
+    return ""

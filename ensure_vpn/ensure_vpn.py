@@ -1,9 +1,29 @@
 from ipaddress import AddressValueError
 
 from .exceptions import EnsureVPNException, VPNNotConnectedException
-from .providers import CustomVPN, HideMyAssVPN, MullvadVPN, NordVPN, ProtonVPN, SurfsharkVPN, VyprVPN
+from .providers import (
+    CustomVPN,
+    HideMyAssVPN,
+    IVPN,
+    MullvadVPN,
+    NordVPN,
+    PrivateInternetAccessVPN,
+    ProtonVPN,
+    SurfsharkVPN,
+    VyprVPN,
+)
 
-providers = [CustomVPN, HideMyAssVPN, MullvadVPN, NordVPN, ProtonVPN, SurfsharkVPN, VyprVPN]
+providers = [
+    CustomVPN,
+    HideMyAssVPN,
+    IVPN,
+    MullvadVPN,
+    NordVPN,
+    PrivateInternetAccessVPN,
+    ProtonVPN,
+    SurfsharkVPN,
+    VyprVPN,
+]
 
 
 def ensure_vpn(ip_or_provider: str) -> None:
