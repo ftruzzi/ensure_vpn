@@ -73,7 +73,6 @@ class CustomVPN(VPNProvider):
     @safe
     def validate(self) -> EnsureVPNResult:
         checker = IPChecker(validation_func=lambda ip: self.wanted_ip.overlaps(ip))
-
         return checker.run()
 
 
@@ -83,17 +82,17 @@ class ProtonVPN(VPNProvider):
     # TODO cache results, re-fetch if failed
     @staticmethod
     def _fetch_servers() -> List[str]:
-        return requests.get(
+        json = requests.get(
             PROTONVPN_SERVER_URL, headers={"User-Agent": USER_AGENT}
         ).json()
+        return list(get_dict_values("ExitIP", json))
 
     @staticmethod
     @safe
     def validate() -> EnsureVPNResult:
         servers = ProtonVPN._fetch_servers()
         checker = IPChecker(
-            validation_func=lambda ip: str(ip.network_address)
-            in list(get_dict_values("ExitIP", servers))
+            validation_func=lambda ip: str(ip.network_address) in servers
         )
 
         return checker.run()
