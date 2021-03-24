@@ -1,6 +1,6 @@
 import abc
 
-from ipaddress import IPv4Network
+from ipaddress import IPv4Address, IPv4Network
 from json import JSONDecodeError
 from typing import Any, Callable, Union
 
@@ -11,10 +11,10 @@ from .constants import IP_CHECKERS, USER_AGENT
 
 
 class EnsureVPNResult:
-    def __init__(self, is_connected: bool, actual_ip: Union[str, IPv4Network]):
+    def __init__(self, is_connected: bool, actual_ip: Union[str, IPv4Address]):
         self.is_connected = is_connected
         if isinstance(actual_ip, str):
-            actual_ip = IPv4Network(actual_ip)
+            actual_ip = IPv4Address(actual_ip)
         self.actual_ip = actual_ip
 
 
@@ -34,7 +34,7 @@ class APIChecker(VPNChecker):
         *,
         url: str,
         validation_func: Callable[[Any], bool],
-        ip_func: Callable[[Any], str],
+        ip_func: Callable[[Any], IPv4Address],
         **request_args,
     ):
         """requests-based checker that performs HTTP requests.
@@ -81,12 +81,12 @@ class IPChecker(VPNChecker):
     def __init__(
         self,
         *,
-        validation_func: Callable[[IPv4Network], bool],
+        validation_func: Callable[[IPv4Address], bool],
     ):
         self.validation_func = validation_func
 
     @staticmethod
-    def _get_current_ip() -> IPv4Network:
+    def _get_current_ip() -> IPv4Address:
         ip_checkers = IP_CHECKERS
 
         actual_ip = None

@@ -23,7 +23,7 @@ def ensure_vpn(ip_or_provider: str) -> None:
     result = selected_provider.validate()
     if result.is_connected is False:
         raise VPNNotConnectedException(
-            f"You are not connected to {selected_provider.name}. Found IP: {str(result.actual_ip.network_address)}",
+            f"You are not connected to {selected_provider.name}. Found IP: {str(result.actual_ip)}",
             actual_ip=result.actual_ip,
         )
 
