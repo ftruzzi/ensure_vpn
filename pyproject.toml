@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "ensure_vpn"
 version = "0.4.0"
-description = "A function to ensure you are connected to your favorite VPN before running your script."
+description = "A function to make sure you are connected to your favorite VPN before running your script."
 authors = ["Francesco Truzzi <francesco@truzzi.me>"]
 readme = "README.md"
 repository = "https://github.com/ftruzzi/ensure_vpn"

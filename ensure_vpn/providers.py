@@ -205,7 +205,7 @@ class IVPN(VPNProvider):
 
 
 class PrivateInternetAccessVPN(VPNProvider):
-    name = "privateinternetaccess"
+    name = "Private Internet Access"
 
     @staticmethod
     def validation_func(soup: BeautifulSoup) -> bool:
