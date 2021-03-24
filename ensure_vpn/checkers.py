@@ -1,15 +1,13 @@
 import abc
-from ipaddress import IPv4Network
 
+from ipaddress import IPv4Network
 from json import JSONDecodeError
 from typing import Any, Callable, Union
 
 import requests
 from requests.exceptions import RequestException
 
-ENSURE_VPN_VERSION = "0.2.0"
-USER_AGENT = f"ensure_vpn-v{ENSURE_VPN_VERSION} github.com/ftruzzi/ensure_vpn/"
-
+from .constants import IP_CHECKERS, USER_AGENT
 
 class EnsureVPNResult:
     def __init__(self, is_connected: bool, actual_ip: Union[str, IPv4Network]):
@@ -72,14 +70,7 @@ class APIChecker(VPNChecker):
 
 
 class IPChecker(VPNChecker):
-    ip_checkers = [
-        "ifconfig.me",
-        "icanhazip.com",
-        "ipinfo.io/ip",
-        "api.ipify.org",
-        "ident.me",
-    ]
-
+    ip_checkers = IP_CHECKERS
     def __init__(
         self,
         *,

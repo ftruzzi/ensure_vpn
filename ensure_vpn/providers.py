@@ -1,28 +1,20 @@
 import abc
+
 from ipaddress import IPv4Network
 from typing import List
+
 import requests
 
-from requests.exceptions import RequestException
 from returns.result import Result, safe
 
-from .checkers import APIChecker, EnsureVPNResult, IPChecker, USER_AGENT
-
-
-def get_dict_values(key, d):
-    if not d:
-        return None
-    if hasattr(d, "items"):
-        for k, v in d.items():
-            if k == key:
-                yield v
-            if isinstance(v, dict):
-                for result in get_dict_values(key, v):
-                    yield result
-            elif isinstance(v, list):
-                for d in v:
-                    for result in get_dict_values(key, d):
-                        yield result
+from .checkers import APIChecker, EnsureVPNResult, IPChecker
+from .constants import (
+    MULLVAD_CHECKER_URL,
+    NORDVPN_CHECKER_URL,
+    PROTONVPN_SERVER_URL,
+    USER_AGENT,
+)
+from .helpers import get_dict_values
 
 
 class VPNProvider(abc.ABC):
@@ -49,7 +41,7 @@ class MullvadVPN(VPNProvider):
     @safe
     def validate() -> EnsureVPNResult:
         checker = APIChecker(
-            url="https://ipv4.am.i.mullvad.net/json",
+            url=MULLVAD_CHECKER_URL,
             validation_func=lambda json: EnsureVPNResult(
                 json["mullvad_exit_ip"] is True, json["ip"]  # type: ignore
             ),
@@ -64,7 +56,7 @@ class NordVPN(VPNProvider):
     @safe
     def validate() -> EnsureVPNResult:
         checker = APIChecker(
-            url="https://nordvpn.com/wp-admin/admin-ajax.php",
+            url=NORDVPN_CHECKER_URL,
             params={"action": "get_user_info_data"},
             validation_func=lambda json: EnsureVPNResult(
                 json["status"] is True, json["ip"]  # type: ignore
@@ -75,13 +67,6 @@ class NordVPN(VPNProvider):
 
 class CustomVPN(VPNProvider):
     name = ""
-    ip_checkers = [
-        "ifconfig.me",
-        "icanhazip.com",
-        "ipinfo.io/ip",
-        "api.ipify.org",
-        "ident.me",
-    ]
 
     def __init__(self, wanted_ip: str) -> None:
         self.name = wanted_ip
@@ -108,7 +93,7 @@ class ProtonVPN(VPNProvider):
     @staticmethod
     def _fetch_servers() -> List[str]:
         return requests.get(
-            "https://api.protonmail.ch/vpn/logicals", headers={"User-Agent": USER_AGENT}
+            PROTONVPN_SERVER_URL, headers={"User-Agent": USER_AGENT}
         ).json()
 
     @staticmethod
