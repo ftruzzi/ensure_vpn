@@ -83,24 +83,21 @@ class IPChecker(VPNChecker):
     def __init__(
         self,
         *,
-        validation_func: Callable[[Any], EnsureVPNResult],
-        **request_args,
+        validation_func: Callable[[str], EnsureVPNResult],
     ):
 
         self.validation_func = validation_func
 
     def run(self) -> EnsureVPNResult:
-        checkers = self.ip_checkers
-
         actual_ip = None
         while actual_ip is None:
             try:
                 actual_ip = APIChecker(
-                    url=f"https://{checkers[0]}",
+                    url=f"https://{self.ip_checkers[0]}",
                     headers={"User-Agent": "curl/7.75"},
                     validation_func=lambda x: x,
                 ).run()
             except RequestException:
-                checkers = checkers[1:]
+                self.ip_checkers = self.ip_checkers[1:]
 
         return self.validation_func(actual_ip)
