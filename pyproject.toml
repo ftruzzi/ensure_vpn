@@ -9,7 +9,6 @@ repository = "https://github.com/ftruzzi/ensure_vpn"
 [tool.poetry.dependencies]
 python = "^3.7"
 requests = "^2.25.1"
-returns = "0.15.0"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.812"

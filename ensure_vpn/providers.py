@@ -9,8 +9,6 @@ from typing import List, Tuple
 
 import requests
 
-from returns.result import Result, safe
-
 from .checkers import APIChecker, EnsureVPNResult, IPChecker
 from .constants import (
     HIDEMYASS_CHECKER_URL,
@@ -33,9 +31,9 @@ class VPNProvider(abc.ABC):
         raise NotImplementedError("Every VPN provider must have a name.")
 
     @abc.abstractmethod
-    def validate(self) -> Result[EnsureVPNResult, Exception]:
+    def validate(self) -> EnsureVPNResult:
         """
-        @safe-wrapped validation function.
+        IP/connection validation function.
         """
         raise NotImplementedError("Every VPN provider must have a validation function.")
 
@@ -48,11 +46,8 @@ class CustomVPN(VPNProvider):
         self.name = wanted_ip
         self.wanted_ip = IPv4Network(wanted_ip)
 
-    @safe
     def validate(self) -> EnsureVPNResult:
-        checker = IPChecker(
-            validation_func=lambda ip: self.wanted_ip.overlaps(ip)
-        )
+        checker = IPChecker(validation_func=lambda ip: self.wanted_ip.overlaps(ip))
         return checker.run()
 
 
@@ -60,7 +55,6 @@ class HideMyAssVPN(VPNProvider):
     name = "HideMyAss"
 
     @staticmethod
-    @safe
     def validate() -> EnsureVPNResult:
         checker = APIChecker(
             url=HIDEMYASS_CHECKER_URL,
@@ -74,7 +68,6 @@ class MullvadVPN(VPNProvider):
     name = "Mullvad"
 
     @staticmethod
-    @safe
     def validate() -> EnsureVPNResult:
         checker = APIChecker(
             url=MULLVAD_CHECKER_URL,
@@ -88,7 +81,6 @@ class NordVPN(VPNProvider):
     name = "NordVPN"
 
     @staticmethod
-    @safe
     def validate() -> EnsureVPNResult:
         checker = APIChecker(
             url=NORDVPN_CHECKER_URL,
@@ -127,7 +119,6 @@ class ProtonVPN(VPNProvider):
         return json.load(open(PROTONVPN_SERVER_FILE_PATH, "r")), False
 
     @staticmethod
-    @safe
     def validate() -> EnsureVPNResult:
         servers, were_fetched = ProtonVPN._get_servers()
         checker = IPChecker(

@@ -1,7 +1,5 @@
 from ipaddress import AddressValueError
 
-from returns.pipeline import is_successful
-
 from .exceptions import EnsureVPNException, VPNNotConnectedException
 from .providers import CustomVPN, HideMyAssVPN, MullvadVPN, NordVPN, ProtonVPN
 
@@ -22,18 +20,12 @@ def ensure_vpn(ip_or_provider: str) -> None:
 
         selected_provider = selected_providers[0]  # type: ignore
 
-    wrapped_result = selected_provider.validate()
-    if is_successful(wrapped_result):
-        result = wrapped_result.unwrap()
-        if result.is_connected is False:
-            raise VPNNotConnectedException(
-                f"You are not connected to {selected_provider.name}. Found IP: {str(result.actual_ip.network_address)}",
-                actual_ip=result.actual_ip,
-            )
-
-        return
-
-    raise wrapped_result.failure()
+    result = selected_provider.validate()
+    if result.is_connected is False:
+        raise VPNNotConnectedException(
+            f"You are not connected to {selected_provider.name}. Found IP: {str(result.actual_ip.network_address)}",
+            actual_ip=result.actual_ip,
+        )
 
 
 def ensure_vpn_decorator(provider: str):
