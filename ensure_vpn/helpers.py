@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Generator
 
 
@@ -18,3 +19,8 @@ def get_dict_values(key, d) -> Generator:
                 for d in v:
                     for result in get_dict_values(key, d):
                         yield result
+
+
+def is_today(date: str, format: str = "%a %b %d %H:%M:%S %Y"):
+    parsed_date = datetime.strptime(date, format)
+    return parsed_date.date() == datetime.today().date()

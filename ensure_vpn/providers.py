@@ -1,7 +1,11 @@
 import abc
+import os
+import json
+import time
 
 from ipaddress import IPv4Network
-from typing import List
+from os.path import isfile
+from typing import List, Tuple
 
 import requests
 
@@ -12,9 +16,10 @@ from .constants import (
     MULLVAD_CHECKER_URL,
     NORDVPN_CHECKER_URL,
     PROTONVPN_SERVER_URL,
+    PROTONVPN_SERVER_FILE_PATH,
     USER_AGENT,
 )
-from .helpers import get_dict_values
+from .helpers import get_dict_values, is_today
 
 
 class VPNProvider(abc.ABC):
@@ -79,7 +84,6 @@ class CustomVPN(VPNProvider):
 class ProtonVPN(VPNProvider):
     name = "ProtonVPN"
 
-    # TODO cache results, re-fetch if failed
     @staticmethod
     def _fetch_servers() -> List[str]:
         json = requests.get(
@@ -88,11 +92,35 @@ class ProtonVPN(VPNProvider):
         return list(get_dict_values("ExitIP", json))
 
     @staticmethod
+    def _get_servers(fetch_servers: bool = False) -> Tuple[List[str], bool]:
+        """
+        Returns ProtonVPN server list from file or network
+        """
+        if (
+            fetch_servers is True
+            or not isfile(PROTONVPN_SERVER_FILE_PATH)
+            or not is_today(time.ctime(os.path.getmtime(PROTONVPN_SERVER_FILE_PATH)))
+        ):
+            servers = ProtonVPN._fetch_servers()
+            with open(PROTONVPN_SERVER_FILE_PATH, "w") as f:
+                json.dump(servers, f)
+
+            return servers, True
+
+        return json.load(open(PROTONVPN_SERVER_FILE_PATH, "r")), False
+
+    @staticmethod
     @safe
     def validate() -> EnsureVPNResult:
-        servers = ProtonVPN._fetch_servers()
+        servers, were_fetched = ProtonVPN._get_servers()
         checker = IPChecker(
             validation_func=lambda ip: str(ip.network_address) in servers
         )
 
+        result = checker.run()
+        if result.is_connected or were_fetched:
+            return result
+
+        # if the check failed with cached server file, retry with new server list
+        servers, _ = ProtonVPN._get_servers(fetch_servers=True)
         return checker.run()

@@ -1,10 +1,14 @@
+import os
+
 import pytest
 
 from ensure_vpn import ensure_vpn, ensure_vpn_decorator
 from ensure_vpn.exceptions import VPNNotConnectedException
+from ensure_vpn.constants import PROTONVPN_SERVER_FILE_PATH
 
 providers = ("mullvad", "nordvpn", "protonvpn")
 custom_ips = ("217.138.222.100", "217.138.222.0/24")
+os.remove(PROTONVPN_SERVER_FILE_PATH)
 
 @pytest.mark.vcr(record_mode="none")
 @pytest.mark.parametrize("ip_or_provider", providers + custom_ips)
