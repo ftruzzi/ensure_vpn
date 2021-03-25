@@ -24,7 +24,7 @@ if os.path.isfile(PROTONVPN_SERVER_FILE_PATH):
     os.remove(PROTONVPN_SERVER_FILE_PATH)
 
 
-# @pytest.mark.vcr(record_mode="once")
+# @pytest.mark.vcr(record_mode="none")
 @pytest.mark.parametrize("ip_or_provider", providers + custom_ips)
 def test_disconnected(ip_or_provider: str):
     try:
