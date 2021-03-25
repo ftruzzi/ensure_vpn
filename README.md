@@ -1,11 +1,18 @@
-A Python function to ensure you are connected to your favorite VPN before running your script or function. It just raises an exception if you're not connected.
+A Python function to make sure you are connected to your favorite VPN before running your script or function. It just raises an exception if you're not connected.
 
 ## Supported VPN providers
 - Custom IP
-- HideMyAss(`"hidemyass"`)
+- ExpressVPN (`"expressvpn"`)
+- HideMyAss (`"hidemyass"`)
+- Hotspot Shield (`"hotspotshield"`)
+- IPVanish (`"ipvanish"`)
+- IVPN (`"ivpn"`)
 - Mullvad (`"mullvad"`)
 - NordVPN (`"nordvpn"`)
+- Private Internet Access (`"privateinternetaccess"`)
 - ProtonVPN (`"protonvpn"`)
+- Surfshark (`"surfshark"`)
+- VyprVPN (`"vyprvpn"`)
 
 Add your own!
 
