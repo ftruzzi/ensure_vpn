@@ -3,8 +3,10 @@ from ipaddress import AddressValueError
 from .exceptions import EnsureVPNException, VPNNotConnectedException
 from .providers import (
     CustomVPN,
+    ExpressVPN,
     HideMyAssVPN,
     HotspotShieldVPN,
+    IPVanishVPN,
     IVPN,
     MullvadVPN,
     NordVPN,
@@ -16,8 +18,10 @@ from .providers import (
 
 providers = [
     CustomVPN,
+    ExpressVPN,
     HideMyAssVPN,
     HotspotShieldVPN,
+    IPVanishVPN,
     IVPN,
     MullvadVPN,
     NordVPN,

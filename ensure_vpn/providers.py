@@ -2,7 +2,6 @@ import abc
 import os
 import json
 import time
-import re
 
 from ipaddress import IPv4Address, IPv4Network
 from os.path import isfile
@@ -13,7 +12,10 @@ import requests
 
 from .checkers import APIChecker, EnsureVPNResult, IPChecker, WebChecker
 from .constants import (
-    HIDEMYASS_CHECKER_URL, HOTSPOTSHIELD_CHECKER_URL,
+    EXPRESSVPN_CHECKER_URL,
+    HIDEMYASS_CHECKER_URL,
+    HOTSPOTSHIELD_CHECKER_URL,
+    IPVANISH_CHECKER_URL,
     IVPN_CHECKER_URL,
     MULLVAD_CHECKER_URL,
     NORDVPN_CHECKER_URL,
@@ -240,4 +242,36 @@ class HotspotShieldVPN(VPNProvider):
             validation_func=lambda json: json["is_hotspotshield_connected"] is True,
             ip_func=lambda json: json["ip"],
         )
+        return checker.run()
+
+
+class IPVanishVPN(VPNProvider):
+    name = "IPVanish"
+
+    @staticmethod
+    def validate() -> EnsureVPNResult:
+        checker = APIChecker(
+            url=IPVANISH_CHECKER_URL,
+            validation_func=lambda json: json["vpn"]["enabled"] is True
+            and json["vpn"]["secure"] is True,
+            ip_func=lambda *_: IPChecker._get_current_ip(),
+        )
+
+        return checker.run()
+
+
+class ExpressVPN(VPNProvider):
+    name = "ExpressVPN"
+
+    @staticmethod
+    def validate() -> EnsureVPNResult:
+        checker = WebChecker(
+            url=EXPRESSVPN_CHECKER_URL,
+            validation_func=lambda soup: "exposed"
+            not in soup.select_one(".ip-address-info .info").text.strip(),
+            ip_func=lambda soup: IPv4Address(
+                soup.select_one(".ip-address span").text.strip()
+            ),
+        )
+
         return checker.run()

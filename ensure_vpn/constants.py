@@ -3,6 +3,8 @@ import os
 ENSURE_VPN_VERSION = "0.4.0"
 USER_AGENT = f"ensure_vpn-v{ENSURE_VPN_VERSION} github.com/ftruzzi/ensure_vpn/"
 
+EXPRESSVPN_CHECKER_URL = "https://www.expressvpn.com/what-is-my-ip"
+IPVANISH_CHECKER_URL = "https://www.ipvanish.com/api/get-location.php"
 IVPN_CHECKER_URL = "https://www.ivpn.net/"
 HIDEMYASS_CHECKER_URL = "https://my.hidemyass.com/vpnbackend/isInVpnTunnel"
 HOTSPOTSHIELD_CHECKER_URL = "https://account.hotspotshield.com/ipinfo"
