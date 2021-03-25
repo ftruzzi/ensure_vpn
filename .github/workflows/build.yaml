@@ -40,7 +40,7 @@ jobs:
         poetry install
     - name: Run tests
       run: |
-        poetry run black .
+        poetry run black --check .
         poetry run mypy ensure_vpn ./tests/*.py
     - name: Build
       run: poetry build
