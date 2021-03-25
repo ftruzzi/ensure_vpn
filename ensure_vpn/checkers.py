@@ -154,7 +154,8 @@ class WebChecker(VPNChecker):
         soup = BeautifulSoup(
             APIChecker._get_response(
                 self.session.request(method="GET", url=self.url, **self.request_args)
-            ), features="html.parser"
+            ),
+            features="html.parser",
         )
 
         return EnsureVPNResult(
